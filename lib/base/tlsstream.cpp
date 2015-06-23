@@ -191,7 +191,7 @@ void TlsStream::OnEvent(int revents)
 
 		lock.unlock();
 
-		if (m_RecvQ->IsDataAvailable())
+		while (m_RecvQ->IsDataAvailable())
 			SignalDataAvailable();
 
 		return;

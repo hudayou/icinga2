@@ -59,6 +59,7 @@ void JsonRpcConnection::StaticInitialize(void)
 void JsonRpcConnection::Start(void)
 {
 	m_Stream->RegisterDataHandler(boost::bind(&JsonRpcConnection::DataAvailableHandler, this));
+	DataAvailableHandler();
 }
 
 String JsonRpcConnection::GetIdentity(void) const

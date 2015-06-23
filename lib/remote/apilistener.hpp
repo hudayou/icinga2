@@ -22,6 +22,7 @@
 
 #include "remote/apilistener.thpp"
 #include "remote/jsonrpcconnection.hpp"
+#include "remote/httpconnection.hpp"
 #include "remote/endpoint.hpp"
 #include "remote/messageorigin.hpp"
 #include "base/dynamicobject.hpp"
@@ -68,6 +69,10 @@ public:
 	void RemoveAnonymousClient(const JsonRpcConnection::Ptr& aclient);
 	std::set<JsonRpcConnection::Ptr> GetAnonymousClients(void) const;
 
+	void AddHttpClient(const HttpConnection::Ptr& aclient);
+	void RemoveHttpClient(const HttpConnection::Ptr& aclient);
+	std::set<HttpConnection::Ptr> GetHttpClients(void) const;
+
 	static Value ConfigUpdateHandler(const MessageOrigin& origin, const Dictionary::Ptr& params);
 
 protected:
@@ -79,6 +84,7 @@ private:
 	boost::shared_ptr<SSL_CTX> m_SSLContext;
 	std::set<TcpSocket::Ptr> m_Servers;
 	std::set<JsonRpcConnection::Ptr> m_AnonymousClients;
+	std::set<HttpConnection::Ptr> m_HttpClients;
 	Timer::Ptr m_Timer;
 
 	void ApiTimerHandler(void);

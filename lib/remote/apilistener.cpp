@@ -285,8 +285,7 @@ void ApiListener::NewClientHandler(const Socket::Ptr& client, const String& host
 	try {
 		tlsStream->Handshake();
 	} catch (const std::exception& ex) {
-		Log(LogCritical, "ApiListener")
-		    << "Client TLS handshake failed: " << DiagnosticInformation(ex);
+		Log(LogCritical, "ApiListener", "Client TLS handshake failed");
 		return;
 	}
 
@@ -342,6 +341,8 @@ void ApiListener::NewClientHandler(const Socket::Ptr& client, const String& host
 	}
 
 	if (ctype == ClientJsonRpc) {
+		Log(LogInformation, "ApiListener", "New JSON-RPC client");
+
 		JsonRpcConnection::Ptr aclient = new JsonRpcConnection(identity, verify_ok, tlsStream, role);
 		aclient->Start();
 
@@ -362,7 +363,11 @@ void ApiListener::NewClientHandler(const Socket::Ptr& client, const String& host
 		} else
 			AddAnonymousClient(aclient);
 	} else {
-		Log(LogWarning, "ApiListener", "TODO: Handle HTTP client");
+		Log(LogInformation, "ApiListener", "New HTTP client");
+
+		HttpConnection::Ptr aclient = new HttpConnection(identity, verify_ok, tlsStream);
+		aclient->Start();
+		AddHttpClient(aclient);
 	}
 }
 
@@ -869,4 +874,22 @@ std::set<JsonRpcConnection::Ptr> ApiListener::GetAnonymousClients(void) const
 {
 	ObjectLock olock(this);
 	return m_AnonymousClients;
+}
+
+void ApiListener::AddHttpClient(const HttpConnection::Ptr& aclient)
+{
+	ObjectLock olock(this);
+	m_HttpClients.insert(aclient);
+}
+
+void ApiListener::RemoveHttpClient(const HttpConnection::Ptr& aclient)
+{
+	ObjectLock olock(this);
+	m_HttpClients.erase(aclient);
+}
+
+std::set<HttpConnection::Ptr> ApiListener::GetHttpClients(void) const
+{
+	ObjectLock olock(this);
+	return m_HttpClients;
 }

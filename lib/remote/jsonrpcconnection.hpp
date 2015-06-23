@@ -17,8 +17,8 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.             *
  ******************************************************************************/
 
-#ifndef APICLIENT_H
-#define APICLIENT_H
+#ifndef JSONRPCCONNECTION_H
+#define JSONRPCCONNECTION_H
 
 #include "remote/endpoint.hpp"
 #include "base/tlsstream.hpp"
@@ -79,7 +79,6 @@ private:
 	double m_Seen;
 	double m_NextHeartbeat;
 	double m_HeartbeatTimeout;
-	Timer::Ptr m_TimeoutTimer;
 
 	StreamReadContext m_Context;
 
@@ -96,4 +95,4 @@ private:
 
 }
 
-#endif /* APICLIENT_H */
+#endif /* JSONRPCCONNECTION_H */

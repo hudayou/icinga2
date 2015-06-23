@@ -21,7 +21,8 @@ mkclass_target(zone.ti zone.tcpp zone.thpp)
 
 set(remote_SOURCES
   apifunction.cpp apilistener.cpp apilistener.thpp apilistener-sync.cpp
-  authority.cpp endpoint.cpp endpoint.thpp jsonrpc.cpp
+  authority.cpp endpoint.cpp endpoint.thpp
+  httpconnection.cpp jsonrpc.cpp
   jsonrpcconnection.cpp jsonrpcconnection-heartbeat.cpp 
   messageorigin.cpp zone.cpp zone.thpp
 )

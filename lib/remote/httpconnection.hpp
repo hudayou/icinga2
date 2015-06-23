@@ -17,34 +17,55 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.             *
  ******************************************************************************/
 
-#ifndef NETSTRING_H
-#define NETSTRING_H
+#ifndef HTTPCONNECTION_H
+#define HTTPCONNECTION_H
 
-#include "base/i2-base.hpp"
-#include "base/stream.hpp"
+#include "base/tlsstream.hpp"
+#include "base/timer.hpp"
+#include "base/workqueue.hpp"
+#include "remote/i2-remote.hpp"
 
 namespace icinga
 {
 
-class String;
-
 /**
- * Helper functions for reading/writing messages in the netstring format.
+ * An API client connection.
  *
- * @see http://cr.yp.to/proto/netstrings.txt
- *
- * @ingroup base
+ * @ingroup remote
  */
-class I2_BASE_API NetString
+class I2_REMOTE_API HttpConnection : public Object
 {
 public:
-	static StreamReadStatus ReadStringFromStream(const Stream::Ptr& stream, String *message, StreamReadContext& context, bool may_wait = false);
-	static void WriteStringToStream(const Stream::Ptr& stream, const String& message);
+	DECLARE_PTR_TYPEDEFS(HttpConnection);
+
+	HttpConnection(const String& identity, bool authenticated, const TlsStream::Ptr& stream);
+
+	void Start(void);
+
+	Object::Ptr GetApiUser(void) const;
+	bool IsAuthenticated(void) const;
+	TlsStream::Ptr GetStream(void) const;
+
+	void Disconnect(void);
 
 private:
-	NetString(void);
+	Object::Ptr m_ApiUser;
+	TlsStream::Ptr m_Stream;
+	double m_Seen;
+	bool m_ProcessingRequest;
+
+	StreamReadContext m_Context;
+
+	WorkQueue m_WriteQueue;
+
+	bool ProcessMessage(void);
+	void DataAvailableHandler(void);
+
+	static void StaticInitialize(void);
+	static void TimeoutTimerHandler(void);
+	void CheckLiveness(void);
 };
 
 }
 
-#endif /* NETSTRING_H */
+#endif /* HTTPCONNECTION_H */
